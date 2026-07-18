@@ -42,4 +42,3 @@ export function translateFunctionError(err: unknown): string {
   }
   return map[message] ?? message ?? 'Terjadi kesalahan. Silakan coba lagi.'
 }
-
