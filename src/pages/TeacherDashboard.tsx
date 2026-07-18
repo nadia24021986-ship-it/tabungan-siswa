@@ -100,6 +100,37 @@ export default function TeacherDashboard() {
           <p className="text-2xl font-bold text-gray-900 dark:text-white">{formatCurrency(totalBalance)}</p>
         </div>
 
+        <button
+          onClick={() => navigate('/aktivasi-lisensi')}
+          className="w-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4 flex items-center justify-between mb-4"
+        >
+          <div className="text-left">
+            <p className="text-xs text-gray-500 dark:text-gray-400">Status Lisensi</p>
+            <p className="font-bold text-gray-900 dark:text-white capitalize">{license?.status ?? 'Memuat...'}</p>
+            {license?.status === 'trial' && (
+              <p className="text-xs text-gray-400 mt-0.5">
+                Berakhir {new Date(license.trialEnd).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+            )}
+            {license?.status === 'active' && license.expiresAt && (
+              <p className="text-xs text-gray-400 mt-0.5">
+                Aktif hingga {new Date(license.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+            )}
+          </div>
+          <span
+            className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+              license?.status === 'active'
+                ? 'bg-success-50 dark:bg-success-950 text-success-700 dark:text-success-400'
+                : license?.status === 'trial'
+                ? 'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-400'
+                : 'bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400'
+            }`}
+          >
+            {license?.status === 'active' ? 'Aktif' : license?.status === 'trial' ? 'Trial' : 'Kelola'}
+          </span>
+        </button>
+
         <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
             <div className="flex items-center gap-1.5 text-success-600 dark:text-success-400 text-xs mb-1">
