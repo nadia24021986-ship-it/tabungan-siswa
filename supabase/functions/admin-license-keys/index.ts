@@ -8,10 +8,10 @@ import { corsHeaders } from '../_shared/cors.ts'
 // ⚠️ GANTI dengan UID akun Supabase Auth milik Indro sendiri sebelum
 // dipakai. Cara ambil UID: Supabase Dashboard > Authentication > Users
 // > cari email Indro > copy kolom UID.
-const ADMIN_UIDS = [0fcd1e0a-019c-4f22-b881-e736db53f70f]
+const ADMIN_UIDS = ['GANTI_DENGAN_UID_ADMIN_KAMU']
 
 function randomBlock(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // tanpa 0,O,1,I biar tidak rancu
   let out = ''
   for (let i = 0; i < 4; i++) out += chars[Math.floor(Math.random() * chars.length)]
   return out
@@ -55,6 +55,7 @@ Deno.serve(async (req) => {
 
     if (action === 'generate') {
       const n = Math.min(Math.max(Number(count) || 1, 1), 50)
+      // durationDays 0 artinya lisensi PERMANEN (tidak pernah kedaluwarsa)
       const duration = durationDays === 0 ? 0 : Number(durationDays) || 365
       const rows = Array.from({ length: n }, () => ({
         activation_key: `TSP-${randomBlock()}-${randomBlock()}`,
