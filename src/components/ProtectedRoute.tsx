@@ -28,9 +28,10 @@ export default function ProtectedRoute({
   }
 
   if (allowedRole === 'teacher' && license) {
-    const isExpired =
-      license.status === 'expired' ||
-      (license.status === 'trial' && new Date(license.trialEnd).getTime() < Date.now())
+    const trialExpired = license.status === 'trial' && new Date(license.trialEnd).getTime() < Date.now()
+    const activeExpired =
+      license.status === 'active' && license.expiresAt !== null && new Date(license.expiresAt).getTime() < Date.now()
+    const isExpired = license.status === 'expired' || trialExpired || activeExpired
     if (isExpired) {
       return <Navigate to="/aktivasi-lisensi" replace />
     }
@@ -38,4 +39,3 @@ export default function ProtectedRoute({
 
   return <>{children}</>
 }
-
