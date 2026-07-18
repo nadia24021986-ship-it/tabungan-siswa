@@ -81,4 +81,3 @@ export function mapLicense(row: any): License {
     expiresAt: row.expires_at
   }
 }
-
