@@ -66,4 +66,3 @@ export function translateAuthError(message: string): string {
   }
   return map[message] ?? message ?? 'Terjadi kesalahan. Silakan coba lagi.'
 }
-
