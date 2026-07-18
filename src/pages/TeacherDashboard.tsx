@@ -112,9 +112,11 @@ export default function TeacherDashboard() {
                 Berakhir {new Date(license.trialEnd).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
               </p>
             )}
-            {license?.status === 'active' && license.expiresAt && (
+            {license?.status === 'active' && (
               <p className="text-xs text-gray-400 mt-0.5">
-                Aktif hingga {new Date(license.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {license.expiresAt
+                  ? `Aktif hingga ${new Date(license.expiresAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`
+                  : 'Aktif selamanya'}
               </p>
             )}
           </div>
