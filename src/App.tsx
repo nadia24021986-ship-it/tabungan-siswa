@@ -11,6 +11,7 @@ import StudentsList from '@/pages/StudentsList'
 import StudentDetail from '@/pages/StudentDetail'
 import Reports from '@/pages/Reports'
 import Settings from '@/pages/Settings'
+import AdminLicenses from '@/pages/AdminLicenses'
 
 function HomeRedirect() {
   const { profile, loading } = useAuth()
@@ -84,6 +85,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRole="teacher">
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin-lisensi"
+            element={
+              <ProtectedRoute allowedRole="teacher">
+                <AdminLicenses />
               </ProtectedRoute>
             }
           />
