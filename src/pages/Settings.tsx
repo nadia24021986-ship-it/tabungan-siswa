@@ -1,12 +1,15 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Moon, Sun } from 'lucide-react'
+import { ArrowLeft, Moon, Sun, MessageCircle } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { updateTeacherProfile, updateTheme, updatePassword } from '@/services/settings'
+import { redeemLicenseKey, translateFunctionError } from '@/services/functions'
+
+const WHATSAPP_NUMBER = '6281384325809'
 
 export default function Settings() {
   const navigate = useNavigate()
-  const { teacher } = useAuth()
+  const { teacher, license } = useAuth()
   const [form, setForm] = useState({
     teacherName: teacher?.teacherName ?? '',
     className: teacher?.className ?? '',
@@ -18,6 +21,26 @@ export default function Settings() {
   const [savingPassword, setSavingPassword] = useState(false)
   const [profileMsg, setProfileMsg] = useState('')
   const [passwordMsg, setPasswordMsg] = useState('')
+  const [licenseKeyInput, setLicenseKeyInput] = useState('')
+  const [licenseLoading, setLicenseLoading] = useState(false)
+  const [licenseError, setLicenseError] = useState('')
+  const [licenseSuccess, setLicenseSuccess] = useState(false)
+
+  const isPermanent = license?.status === 'active' && license.expiresAt === null
+
+  async function handleActivateLicense() {
+    setLicenseError('')
+    setLicenseLoading(true)
+    try {
+      await redeemLicenseKey(licenseKeyInput)
+      setLicenseSuccess(true)
+      setLicenseKeyInput('')
+    } catch (err) {
+      setLicenseError(translateFunctionError(err))
+    } finally {
+      setLicenseLoading(false)
+    }
+  }
 
   function update<K extends keyof typeof form>(field: K, value: string) {
     setForm((f) => ({ ...f, [field]: value }))
@@ -79,6 +102,55 @@ export default function Settings() {
       </div>
 
       <div className="max-w-md mx-auto px-4 py-4 space-y-4">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
+          <h2 className="font-semibold text-gray-900 dark:text-white text-sm mb-1">Status Lisensi</h2>
+          <p className="text-sm text-gray-700 dark:text-gray-300 capitalize mb-3">
+            {isPermanent ? 'Aktif Selamanya' : license?.status === 'trial' ? 'Trial' : license?.status === 'active' ? 'Aktif (Berjangka)' : 'Tidak Aktif'}
+          </p>
+
+          {!isPermanent && (
+            <>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                Hubungi admin untuk mendapatkan kunci aktivasi lisensi permanen.
+              </p>
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-success-600 hover:bg-success-700 text-white text-sm font-semibold rounded-xl py-2.5 flex items-center justify-center gap-2 mb-3"
+              >
+                <MessageCircle className="w-4 h-4" /> Hubungi via WhatsApp
+              </a>
+
+              {licenseError && (
+                <div className="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 text-xs rounded-lg px-3 py-2 mb-2">
+                  {licenseError}
+                </div>
+              )}
+              {licenseSuccess && (
+                <div className="bg-success-50 dark:bg-success-950 text-success-700 dark:text-success-400 text-xs rounded-lg px-3 py-2 mb-2">
+                  Lisensi berhasil diaktifkan!
+                </div>
+              )}
+              <div className="flex gap-2">
+                <input
+                  value={licenseKeyInput}
+                  onChange={(e) => setLicenseKeyInput(e.target.value.toUpperCase())}
+                  placeholder="TSP-XXXX-XXXX"
+                  className="flex-1 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2.5 text-xs text-center tracking-wide font-mono text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-600"
+                />
+                <button
+                  onClick={handleActivateLicense}
+                  disabled={licenseLoading || !licenseKeyInput}
+                  className="bg-primary-700 hover:bg-primary-800 disabled:opacity-60 text-white text-xs font-semibold rounded-xl px-4"
+                >
+                  {licenseLoading ? '...' : 'Aktifkan'}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4 flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             {teacher?.theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
@@ -143,4 +215,3 @@ export default function Settings() {
     </div>
   )
 }
-
