@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import VideoIntro from '@/components/VideoIntro'
 import Login from '@/pages/Login'
 import RegisterTeacher from '@/pages/RegisterTeacher'
 import TeacherDashboard from '@/pages/TeacherDashboard'
@@ -12,6 +13,7 @@ import StudentDetail from '@/pages/StudentDetail'
 import Reports from '@/pages/Reports'
 import Settings from '@/pages/Settings'
 import AdminLicenses from '@/pages/AdminLicenses'
+import WelcomeScreen from '@/pages/WelcomeScreen'
 
 function HomeRedirect() {
   const { profile, loading } = useAuth()
@@ -32,14 +34,24 @@ function ThemeSync() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true)
+
   return (
     <BrowserRouter>
       <AuthProvider>
         <ThemeSync />
+        {showSplash && (
+          <VideoIntro
+            src="/videos/splash.mp4"
+            durationMs={2000}
+            onFinish={() => setShowSplash(false)}
+          />
+        )}
         <Routes>
           <Route path="/" element={<HomeRedirect />} />
           <Route path="/login" element={<Login />} />
           <Route path="/daftar" element={<RegisterTeacher />} />
+          <Route path="/selamat-datang" element={<WelcomeScreen />} />
           <Route
             path="/aktivasi-lisensi"
             element={
