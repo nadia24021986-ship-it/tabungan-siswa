@@ -8,7 +8,7 @@ import { corsHeaders } from '../_shared/cors.ts'
 // ⚠️ GANTI dengan UID akun Supabase Auth milik Indro sendiri sebelum
 // dipakai. Cara ambil UID: Supabase Dashboard > Authentication > Users
 // > cari email Indro > copy kolom UID.
-const ADMIN_UIDS = ['0fcd1e0a-019c-4f22-b881-e736db53f70f']
+const ADMIN_UIDS = ['GANTI_DENGAN_UID_ADMIN_KAMU']
 
 function randomBlock(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // tanpa 0,O,1,I biar tidak rancu
@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
     throw new Error('Aksi tidak dikenali.')
   } catch (err) {
     return new Response(JSON.stringify({ error: (err as Error).message }), {
-      status: 400,
+      status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
