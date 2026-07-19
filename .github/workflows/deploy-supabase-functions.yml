@@ -14,18 +14,29 @@ jobs:
       - name: Checkout kode
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Supabase CLI (versi beta, dukung token format terbaru)
-        run: npm install -g supabase@beta
-
-      - name: Cek versi Supabase CLI
-        run: supabase --version
-
-      - name: Deploy semua Edge Functions (mode API, tanpa Docker)
-        run: supabase functions deploy --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} --use-api
+      - name: Deploy setiap function lewat Management API (tanpa CLI)
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          set -e
+          FUNCTIONS="create-transaction create-student-account redeem-license-key admin-license-keys"
+          for SLUG in $FUNCTIONS; do
+            echo "=== Deploying $SLUG ==="
+            ENTRYPOINT="functions/$SLUG/index.ts"
+            HTTP_CODE=$(curl --silent --output response.json --write-out "%{http_code}" \
+              --request POST \
+              --url "https://api.supabase.com/v1/projects/${SUPABASE_PROJECT_REF}/functions/deploy?slug=${SLUG}" \
+              --header "Authorization: Bearer ${SUPABASE_ACCESS_TOKEN}" \
+              --form "metadata={\"entrypoint_path\":\"${ENTRYPOINT}\",\"name\":\"${SLUG}\",\"verify_jwt\":false}" \
+              --form "file=@supabase/functions/${SLUG}/index.ts;filename=${ENTRYPOINT}" \
+              --form "file=@supabase/functions/_shared/cors.ts;filename=functions/_shared/cors.ts")
+            echo "HTTP status: $HTTP_CODE"
+            cat response.json
+            echo ""
+            if [ "$HTTP_CODE" -ge 300 ]; then
+              echo "Deploy $SLUG GAGAL"
+              exit 1
+            fi
+            echo "$SLUG berhasil dideploy"
+          done
