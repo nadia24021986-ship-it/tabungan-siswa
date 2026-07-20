@@ -43,7 +43,7 @@ export default function App() {
         {showSplash && (
           <VideoIntro
             src="/videos/splash.mp4"
-            durationMs={2000}
+            durationMs={3000}
             onFinish={() => setShowSplash(false)}
           />
         )}
