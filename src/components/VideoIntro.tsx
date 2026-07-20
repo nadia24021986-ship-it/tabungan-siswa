@@ -6,7 +6,7 @@ interface Props {
   onFinish: () => void
 }
 
-export default function VideoIntro({ src, durationMs = 2000, onFinish }: Props) {
+export default function VideoIntro({ src, durationMs = 3000, onFinish }: Props) {
   const [finished, setFinished] = useState(false)
 
   useEffect(() => {
