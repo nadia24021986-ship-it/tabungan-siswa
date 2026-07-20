@@ -13,9 +13,8 @@ export default function WelcomeScreen() {
   return (
     <VideoIntro
       src="/videos/welcome.mp4"
-      durationMs={2000}
+      durationMs={3000}
       onFinish={() => navigate('/', { replace: true })}
     />
   )
 }
-
